@@ -1,0 +1,113 @@
+class Donor:
+    def __init__(self, name, blood_type, contact_number):
+        self.name = name
+        self.blood_type = blood_type
+        self.contact_number = contact_number
+        self.donations = []
+
+    def add_donation(self, donation_date, quantity):
+        self.donations.append({"date": donation_date, "quantity": quantity})
+
+    def total_donations(self):
+        return len(self.donations)
+
+class BloodBank:
+    def __init__(self):
+        self.donors = []
+
+    def add_donor(self, name, blood_type, contact_number):
+        donor = Donor(name, blood_type, contact_number)
+        self.donors.append(donor)
+
+    def find_donor_by_blood_type(self, blood_type):
+        matching_donors = [donor for donor in self.donors if donor.blood_type == blood_type]
+        return matching_donors
+
+    def find_donor_by_name(self, name):
+        matching_donors = [donor for donor in self.donors if name.lower() in donor.name.lower()]
+        return matching_donors
+
+    def update_donor_contact(self, name, new_contact_number):
+        for donor in self.donors:
+            if donor.name.lower() == name.lower():
+                donor.contact_number = new_contact_number
+                return True
+        return False
+
+    def add_donation(self, name, donation_date, quantity):
+        for donor in self.donors:
+            if donor.name.lower() == name.lower():
+                donor.add_donation(donation_date, quantity)
+                return True
+        return False
+
+    def total_blood_inventory(self, blood_type):
+        total_inventory = sum([donor.total_donations() for donor in self.donors if donor.blood_type == blood_type])
+        return total_inventory
+
+def main():
+    blood_bank = BloodBank()
+
+    while True:
+        print("\nBlood Bank Management System")
+        print("1. Add Donor")
+        print("2. Update Donor Contact Information")
+        print("3. Add Blood Donation")
+        print("4. Search Donors by Blood Type")
+        print("5. Search Donors by Name")
+        print("6. Check Blood Inventory")
+        print("7. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            name = input("Enter donor's name: ")
+            blood_type = input("Enter donor's blood type: ")
+            contact_number = input("Enter donor's contact number: ")
+            blood_bank.add_donor(name, blood_type, contact_number)
+            print("Donor added successfully!")
+        elif choice == '2':
+            name = input("Enter donor's name: ")
+            new_contact_number = input("Enter new contact number: ")
+            if blood_bank.update_donor_contact(name, new_contact_number):
+                print("Contact information updated successfully!")
+            else:
+                print("Donor not found.")
+        elif choice == '3':
+            name = input("Enter donor's name: ")
+            donation_date = input("Enter donation date (YYYY-MM-DD): ")
+            quantity = int(input("Enter quantity (in mL): "))
+            if blood_bank.add_donation(name, donation_date, quantity):
+                print("Donation added successfully!")
+            else:
+                print("Donor not found.")
+        elif choice == '4':
+            blood_type = input("Enter blood type to find donors: ")
+            donors = blood_bank.find_donor_by_blood_type(blood_type)
+            if donors:
+                print("Donors with blood type", blood_type, ":")
+                for donor in donors:
+                    print(donor.name, "-", donor.contact_number)
+            else:
+                print("No donors found with blood type", blood_type)
+        elif choice == '5':
+            name = input("Enter name or part of the name to search: ")
+            donors = blood_bank.find_donor_by_name(name)
+            if donors:
+                print("Matching donors:")
+                for donor in donors:
+                    print(donor.name, "-", donor.contact_number)
+            else:
+                print("No donors found with the provided name.")
+        elif choice == '6':
+            blood_type = input("Enter blood type to check inventory: ")
+            total_inventory = blood_bank.total_blood_inventory(blood_type)
+            print("Total inventory for blood type", blood_type, ":", total_inventory, "mL")
+        elif choice == '7':
+            print("Exiting the program...")
+            break
+        else:
+            print("Invalid choice. Please choose again.")
+
+if __name__ == "__main__":
+    main()
